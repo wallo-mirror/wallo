@@ -4,6 +4,10 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import ThemeSwitch from '$lib/components/ui/theme-switch/theme-switch.svelte';
+	import type { PageData } from './$types';
+	import { signIn } from '@auth/sveltekit/client';
+
+	export let data: PageData;
 </script>
 
 <div class="border-b-2">
@@ -14,7 +18,16 @@
 				Wallo
 			</a>
 			<div class=" ms-auto">
-				<Button on:click={() => goto('/dashboard')}>Dashboard</Button>
+				{#if data.session}
+					<Button on:click={() => goto('/dashboard')}>Dashboard</Button>
+				{:else}
+					<Button
+						on:click={() =>
+							signIn('github', {
+								callbackUrl: '/dashboard'
+							})}>Login</Button
+					>
+				{/if}
 			</div>
 		</nav>
 		<ThemeSwitch></ThemeSwitch>

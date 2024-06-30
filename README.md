@@ -1,38 +1,72 @@
-# create-svelte
+<div align="center">
+<h1>Wallo</h1>
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Open-Source moderation platform.
 
-## Creating a project
+<img src="logo.png" alt="Wallo mascot, a little ghost" height="128" />
 
-If you're seeing this, you've probably already done this step. Congrats!
+[![License](https://img.shields.io/gitlab/license/wallo-dev/wallo?style=for-the-badge)](https://gitlab.com/wallo-dev/wallo/-/raw/main/LICENSE)
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+</div>
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+This application relies on Cloudflare's [wrangler](https://developers.cloudflare.com/workers/wrangler/).
 
-```bash
-npm run dev
+We use [bun](https://bun.sh/) for development, but npm should work fine as well.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+We use [Auth.js](https://authjs.dev/) for authentication, and in production we use [GitHub OAuth](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app) as a provider. If you want to use something else the code for configuring providers is in `src/lib/auth.ts`.
+
+To setup environment variables, create `.dev.vars` file with the following:
+
+```env
+AUTH_SECRET=
+AUTH_GITHUB_ID=
+AUTH_GITHUB_SECRET=
 ```
 
-## Building
-
-To create a production version of your app:
+You can create `AUTH_SECRET` value with:
 
 ```bash
-npm run build
+openssl rand -base64 33
 ```
 
-You can preview the production build with `npm run preview`.
+Create a D1 database in Cloudflare and copy its id and name into `wrangler.toml`. Then run:
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+```bash
+bun wrangler d1 execute pluto --local --file src/schema.sql
+```
+
+After setting up that you can start a server with:
+
+```bash
+bun run preview
+```
+
+To create a hot-reload server instead, use:
+
+```bash
+bun run dev
+```
+
+Some functionality is limited in hot-reload due to limitations of wrangler.
+
+## Deployment
+
+Make sure you're logged in with:
+
+```bash
+bun wrangler login
+```
+
+Set up the remote database:
+
+```bash
+bun wrangler d1 execute pluto --remote --file src/schema.sql
+```
+
+And then deploy:
+
+```bash
+bun wrangler deploy
+```
