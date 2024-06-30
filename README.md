@@ -70,3 +70,82 @@ And then deploy:
 ```bash
 bun wrangler deploy
 ```
+
+## API
+
+There's only one incoming API at the moment:
+
+```http
+POST /v0/api/requestPublication
+Content-Type: application/json
+Authorization: Basic {SECRET}
+{
+    id: string;
+    clientId: string;
+    kind: 'content';
+}
+```
+
+Where `id` is the content id, and `clientId` being the id relating to the platform.
+
+Wallo also makes a callback request either of two types:
+
+```http
+POST {CALLBACK URL}
+Content-Type: application/json
+Authorization: Basic {SECRET}
+{
+    kind: 'content';
+    relevantId: string;
+}
+
+```
+
+Of which the callback URL should respond with the content that the `relevantId` is associated with.
+
+It should respond with the following format:
+
+```ts
+type Response = {
+	medias: Media[];
+	possibleActions: PossibleAction[];
+};
+
+type PossibleAction = {
+	id: string;
+	display?: string;
+	variant?: 'default' | 'secondary' | 'destructive' | 'outline';
+};
+
+type Media =
+	| {
+			kind: 'text';
+			message: string;
+			tag?: string;
+	  }
+	| {
+			kind: 'image';
+			url: string;
+			alt?: string;
+			tag?: string;
+	  }
+	| {
+			kind: 'video';
+			url: string;
+			tag?: string;
+	  };
+```
+
+The second call is made when an action has been done:
+
+```http
+POST {CALLBACK URL}
+Content-Type: application/json
+Authorization: Basic {SECRET}
+{
+    kind: 'content';
+    relevantId: string;
+    action: string;
+}
+
+```
