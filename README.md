@@ -78,7 +78,7 @@ bun wrangler deploy
 There's only one incoming API at the moment:
 
 ```http
-POST /v0/api/requestPublication
+POST /api/v0/requestPublication
 Content-Type: application/json
 Authorization: Basic {SECRET}
 {
