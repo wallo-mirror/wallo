@@ -15,7 +15,7 @@ export const load = (async ({ params, platform, locals }) => {
 
 	if (organization === null) redirect(303, '/dashboard');
 
-	const platforms =
+	const platforms = (
 		(
 			await platform?.env.DB.prepare(
 				`SELECT p.*
@@ -25,7 +25,8 @@ export const load = (async ({ params, platform, locals }) => {
 			)
 				.bind(organizationId)
 				.all<Platform>()
-		)?.results ?? [];
+		)?.results ?? []
+	).map((p) => ({ id: p.id, name: p.name }));
 
 	return {
 		organization,

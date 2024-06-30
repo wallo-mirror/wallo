@@ -129,3 +129,13 @@ CREATE TABLE IF NOT EXISTS "caseViews" (
     FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE CASCADE,
     FOREIGN KEY ("platformId", "relevantId", "kind") REFERENCES "cases" ("platformId", "relevantId", "kind") ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS "invitation" (
+    "platformId" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    FOREIGN KEY ("platformId") REFERENCES "platforms" ("id") ON DELETE CASCADE,
+    PRIMARY KEY ("platformId", "email")
+);
+
+CREATE INDEX IF NOT EXISTS "idxInvitationEmail" ON "invitation" ("email");
+CREATE INDEX IF NOT EXISTS "idxInvitationPlatform" ON "invitation" ("platformId");

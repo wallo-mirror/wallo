@@ -5,6 +5,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { signOut } from '@auth/sveltekit/client';
 	import Logo from '$lib/logo.svelte';
+	import { getInitials } from '$lib/name';
 
 	export let data: LayoutData;
 </script>
@@ -22,13 +23,7 @@
 			<DropdownMenu.Trigger>
 				<Avatar.Root>
 					<Avatar.Image src={data.session?.user?.image} alt={data.session?.user?.name} />
-					<Avatar.Fallback
-						>{data.session?.user?.name
-							?.trim()
-							.split(' ')
-							.map((s) => s[0])
-							.join('')}</Avatar.Fallback
-					>
+					<Avatar.Fallback>{getInitials(data?.session?.user?.name ?? 'N / A')}</Avatar.Fallback>
 				</Avatar.Root>
 			</DropdownMenu.Trigger>
 			<DropdownMenu.Content>

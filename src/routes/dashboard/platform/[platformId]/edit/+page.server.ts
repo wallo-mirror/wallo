@@ -2,9 +2,11 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad, RouteParams } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { formSchema } from './schema';
+import { editFormSchema } from './edit-schema';
 import type { Orgnaization, Platform } from '$lib/types';
 import { generateRandomHex } from '$lib/crypto';
+import { inviteFormSchema } from './invite-moderator';
+import { deleteModeratorFormSchema } from './delete-moderator';
 
 async function isAuth({
 	locals,
@@ -48,16 +50,47 @@ async function isAuth({
 export const load = (async ({ locals, platform, params }) => {
 	const { moderationPlatform, organization } = await isAuth({ locals, platform, params });
 
+	const moderators =
+		(
+			await platform?.env.DB.prepare(
+				`SELECT u.*
+				FROM platformModerators pm
+				JOIN users u ON pm.userId = u.id
+				WHERE pm.platformId = ?`
+			)
+				.bind(moderationPlatform.id)
+				.all<{
+					id: string;
+					name: string;
+					email: string;
+					image: string;
+				}>()
+		)?.results ?? [];
+
+	const invitations = (
+		(
+			await platform?.env.DB.prepare(`SELECT email FROM invitation WHERE platformId = ?`)
+				.bind(moderationPlatform.id)
+				.all<{
+					email: string;
+				}>()
+		)?.results ?? []
+	).map((i) => i.email);
+
 	return {
 		organization,
-		form: await superValidate(
+		editPlatformForm: await superValidate(
 			{
 				platformName: moderationPlatform.name,
 				callbackUrl: moderationPlatform.callbackUrl,
 				secret: moderationPlatform.secret
 			},
-			zod(formSchema)
-		)
+			zod(editFormSchema)
+		),
+		invitePlatformForm: await superValidate(zod(inviteFormSchema)),
+		deleteModeratorForm: await superValidate(zod(deleteModeratorFormSchema)),
+		moderators,
+		invitations
 	};
 }) satisfies PageServerLoad;
 
@@ -69,7 +102,7 @@ export const actions: Actions = {
 
 		if (organization === null) return fail(403);
 
-		const form = await superValidate(event, zod(formSchema));
+		const form = await superValidate(event, zod(editFormSchema));
 		if (!form.valid) {
 			return fail(400, {
 				form
@@ -105,7 +138,7 @@ export const actions: Actions = {
 			.bind(secret, moderationPlatform.id)
 			.run();
 
-		const form = await superValidate(event, zod(formSchema));
+		const form = await superValidate(event, zod(editFormSchema));
 		if (!form.valid) {
 			return fail(400, {
 				form
@@ -119,5 +152,64 @@ export const actions: Actions = {
 				secret
 			}
 		};
+	},
+	invite: async (event) => {
+		const { locals, params, platform } = event;
+		const { moderationPlatform } = await isAuth({ locals, platform, params });
+
+		const form = await superValidate(event, zod(inviteFormSchema));
+		if (!form.valid) {
+			return fail(400, {
+				form
+			});
+		}
+
+		const { email } = form.data;
+
+		await platform?.env.DB.prepare(`INSERT INTO invitation (email, platformId) VALUES (?, ?)`)
+			.bind(email, moderationPlatform.id)
+			.run();
+
+		return { form };
+	},
+	deleteInvite: async (event) => {
+		const { locals, params, platform } = event;
+		const { moderationPlatform } = await isAuth({ locals, platform, params });
+
+		const form = await superValidate(event, zod(inviteFormSchema));
+		if (!form.valid) {
+			return fail(400, {
+				form
+			});
+		}
+
+		const { email } = form.data;
+
+		await platform?.env.DB.prepare(`DELETE FROM invitation WHERE email = ? AND platformId = ?`)
+			.bind(email, moderationPlatform.id)
+			.run();
+
+		return {};
+	},
+	deleteModerator: async (event) => {
+		const { locals, params, platform } = event;
+		const { moderationPlatform } = await isAuth({ locals, platform, params });
+
+		const form = await superValidate(event, zod(deleteModeratorFormSchema));
+		if (!form.valid) {
+			return fail(400, {
+				form
+			});
+		}
+
+		const { id } = form.data;
+
+		await platform?.env.DB.prepare(
+			`DELETE FROM platformModerators WHERE userId = ? AND platformId = ?`
+		)
+			.bind(id, moderationPlatform.id)
+			.run();
+
+		return {};
 	}
 };
