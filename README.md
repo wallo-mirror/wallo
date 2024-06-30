@@ -31,6 +31,8 @@ You can create `AUTH_SECRET` value with:
 openssl rand -base64 33
 ```
 
+For the two other values, follow [this tutorial at Auth.js](https://authjs.dev/getting-started/authentication/oauth).
+
 Create a D1 database in Cloudflare and copy its id and name into `wrangler.toml`. Then run:
 
 ```bash
