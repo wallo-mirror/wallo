@@ -1,10 +1,10 @@
 -- Table to store account information
 CREATE TABLE IF NOT EXISTS "accounts" (
     "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL DEFAULT NULL,
+    "userId" TEXT NOT NULL DEFAULT NULL,
     "type" TEXT NOT NULL DEFAULT NULL,
     "provider" TEXT NOT NULL DEFAULT NULL,
-    "provider_account_id" TEXT NOT NULL DEFAULT NULL,
+    "providerAccountId" TEXT NOT NULL DEFAULT NULL,
     "refresh_token" TEXT DEFAULT NULL,
     "access_token" TEXT DEFAULT NULL,
     "expires_at" INTEGER DEFAULT NULL,
@@ -20,10 +20,10 @@ CREATE TABLE IF NOT EXISTS "accounts" (
 -- Table to store session information
 CREATE TABLE IF NOT EXISTS "sessions" (
     "id" TEXT NOT NULL,
-    "session_token" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL DEFAULT NULL,
+    "sessionToken" TEXT NOT NULL,
+    "userId" TEXT NOT NULL DEFAULT NULL,
     "expires" DATETIME NOT NULL DEFAULT NULL,
-    PRIMARY KEY ("session_token")
+    PRIMARY KEY ("sessionToken")
 );
 
 -- Table to store user information
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS "users" (
     "id" TEXT NOT NULL DEFAULT '',
     "name" TEXT DEFAULT NULL,
     "email" TEXT DEFAULT NULL,
-    "email_verified" DATETIME DEFAULT NULL,
+    "emailVerified" DATETIME DEFAULT NULL,
     "image" TEXT DEFAULT NULL,
     PRIMARY KEY ("id")
 );
