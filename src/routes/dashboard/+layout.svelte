@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { LayoutData } from './$types';
-	import logo from '$lib/assets/logo.svg';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import ThemeSwitch from '$lib/components/ui/theme-switch/theme-switch.svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { signOut } from '@auth/sveltekit/client';
+	import Logo from '$lib/logo.svelte';
 
 	export let data: LayoutData;
 </script>
@@ -13,7 +13,7 @@
 	<header class="container flex max-w-screen-xl gap-2 py-2">
 		<nav class="contents">
 			<a class="me-auto flex items-center gap-1 text-3xl font-extrabold" href="/dashboard">
-				<img src={logo} alt="Wallo Logo" style:height="1.25em" style:width="1.25em" />
+				<Logo></Logo>
 				Wallo
 			</a>
 		</nav>
