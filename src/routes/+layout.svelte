@@ -14,6 +14,8 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={$page.url.toString()} />
 	<meta property="og:image" content="{$page.url.origin}/wallo-thumbnail.png" />
+	<meta property="og:site_name" content="Wallo" />
+	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <ModeWatcher />
