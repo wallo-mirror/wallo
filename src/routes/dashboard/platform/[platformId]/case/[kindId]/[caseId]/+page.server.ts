@@ -1,11 +1,8 @@
 import {
 	fixAction,
 	fixCase,
-	type Account,
 	type ActionDB,
 	type CaseDB,
-	type Community,
-	type Content,
 	type CustomAction,
 	type DiscussionAction,
 	type PlatformAction
@@ -19,6 +16,7 @@ import { superValidate } from 'sveltekit-superforms';
 import { actionFormSchema } from './action-schema';
 import { redirectMe } from '../../../queue';
 import { skip } from './queue';
+import { informPlaformOfAction, retrieveSubjectData } from '$lib/api';
 
 export const load = (async ({ params, platform, locals }) => {
 	const { moderationPlatform } = await canEnter(params, platform, locals);
@@ -32,21 +30,16 @@ export const load = (async ({ params, platform, locals }) => {
 
 	const url = new URL(moderationPlatform.callbackUrl);
 
-	const resp = await fetch(url, {
-		method: 'POST',
-		headers: {
-			Authorization: `Basic ${moderationPlatform.secret}`,
-			'Content-Type': 'application/json'
+	const subject = await retrieveSubjectData(
+		{
+			url,
+			secret: moderationPlatform.secret
 		},
-		body: JSON.stringify({
-			kind: params.kindId,
-			relevantId: params.caseId
-		})
-	});
+		params.kindId,
+		params.caseId
+	);
 
-	if (!resp.ok) throw fail(500);
-
-	const subject = await resp.json<Account | Community | Content>();
+	if (subject.valid === false) throw fail(subject.error.code);
 
 	const actions = (
 		(
@@ -64,7 +57,7 @@ export const load = (async ({ params, platform, locals }) => {
 	return {
 		moderationCase: fixCase(moderationCase),
 		kind: params.kindId,
-		subject,
+		subject: subject.data,
 		actions,
 		commentForm: await superValidate(zod(commentFormSchema)),
 		actionForm: await superValidate(zod(actionFormSchema))
@@ -136,18 +129,15 @@ export const actions: Actions = {
 				)
 				.run();
 
-			await fetch(moderationPlatform.callbackUrl, {
-				method: 'POST',
-				headers: {
-					Authorization: `Basic ${moderationPlatform.secret}`,
-					'Content-Type': 'application/json'
+			await informPlaformOfAction(
+				{
+					url: new URL(moderationPlatform.callbackUrl),
+					secret: moderationPlatform.secret
 				},
-				body: JSON.stringify({
-					kind: event.params.kindId,
-					relevantId: event.params.caseId,
-					action: form.data.id
-				})
-			});
+				event.params.kindId,
+				event.params.caseId,
+				form.data.id
+			);
 
 			await event.platform?.env.DB.prepare(
 				`UPDATE cases

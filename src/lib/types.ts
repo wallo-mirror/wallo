@@ -135,6 +135,26 @@ export type Case = Modify<
 	}
 >;
 
+export type Result<T, E> = { valid: true; data: T } | { valid: false; error: E };
+
+export function success<T>(data: T): Result<T, never> {
+	return { valid: true, data };
+}
+
+export function failure<E>(error: E): Result<never, E> {
+	return { valid: false, error };
+}
+
+export function getError(error: unknown): string {
+	if (error instanceof Error) {
+		return error.message;
+	} else if (typeof error === 'string') {
+		return error;
+	} else {
+		return 'Unknown error';
+	}
+}
+
 export function fixCase(givenCase: CaseDB): Case {
 	return {
 		...givenCase,

@@ -8,6 +8,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Info } from 'lucide-svelte';
 	import ActionForm from './action-form.svelte';
+	import MediaDisplay from './MediaDisplay.svelte';
 
 	export let data: PageData;
 </script>
@@ -25,24 +26,7 @@
 
 		{#if 'medias' in data.subject}
 			<div class="my-2 flex flex-col gap-4">
-				{#each data.subject.medias as media}
-					<div class="flex w-full flex-col gap-1.5">
-						{#if media.tag}
-							<Label>{media.tag}</Label>
-						{/if}
-						<Card class="overflow-hidden">
-							{#if media.kind === 'text'}
-								<p class="p-2">
-									{media.message}
-								</p>
-							{:else if media.kind === 'image'}
-								<img src={media.url} alt={media.alt} />
-							{:else if media.kind === 'video'}
-								<video src={media.url} controls></video>
-							{/if}
-						</Card>
-					</div>
-				{/each}
+				<MediaDisplay medias={data.subject.medias}></MediaDisplay>
 			</div>
 		{/if}
 

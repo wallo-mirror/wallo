@@ -5,11 +5,68 @@
 	import type { PageData } from './$types';
 	import { signIn } from '@auth/sveltekit/client';
 	import Logo from '$lib/logo.svelte';
+	import * as Card from '$lib/components/ui/card';
+	import * as Avatar from '$lib/components/ui/avatar';
+	import Highlight from 'svelte-highlight';
+	import typescript from 'svelte-highlight/languages/typescript';
+	import { default as lightTheme } from 'svelte-highlight/styles/a11y-light';
+	import { default as darkTheme } from 'svelte-highlight/styles/a11y-dark';
+	import { mode } from 'mode-watcher';
+	import { onMount } from 'svelte';
+	import { json } from 'svelte-highlight/languages';
+	import MediaDisplay from './dashboard/platform/[platformId]/case/[kindId]/[caseId]/MediaDisplay.svelte';
 
 	export let data: PageData;
+
+	function splitmix32(a: number) {
+		return function () {
+			a |= 0;
+			a = (a + 0x9e3779b9) | 0;
+			let t = a ^ (a >>> 16);
+			t = Math.imul(t, 0x21f0aaad);
+			t = t ^ (t >>> 15);
+			t = Math.imul(t, 0x735a2d97);
+			return ((t = t ^ (t >>> 15)) >>> 0) / 4294967296;
+		};
+	}
+
+	function generateRandomBadWord(seed: number, length: number): string {
+		const getRandomInt = splitmix32(seed);
+		const censoredLetters = '$%#@!*';
+		return Array.from({ length }, () =>
+			censoredLetters.charAt(Math.floor(getRandomInt() * censoredLetters.length))
+		).join('');
+	}
+
+	let randomSeed = 0;
+
+	onMount(() => {
+		const interval = setInterval(() => {
+			randomSeed = randomSeed + 1;
+		}, 40);
+
+		return () => clearInterval(interval);
+	});
+
+	$: currentRandomBadWord = (x: number, length: number) =>
+		generateRandomBadWord(randomSeed + x, length);
+
+	$: demoStatement = `What does the fox say? ${currentRandomBadWord(0, 4)}`;
+
+	let actionTaken: 'approve' | 'unapprove' | 'unreject' | 'reject' | null = null;
 </script>
 
-<div class="border-b-2">
+<svelte:head>
+	{#if $mode === 'dark'}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+		{@html darkTheme}
+	{:else}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+		{@html lightTheme}
+	{/if}
+</svelte:head>
+
+<div>
 	<header class="container flex max-w-screen-xl gap-2 py-2">
 		<nav class=" contents">
 			<a class="flex items-center gap-1 text-3xl font-extrabold" href="/">
@@ -31,4 +88,341 @@
 		</nav>
 		<ThemeSwitch></ThemeSwitch>
 	</header>
+	<main class="container flex flex-col items-center justify-center gap-4 py-16">
+		<section class="flex flex-col items-center justify-center gap-4">
+			<h1 class="text-5xl font-extrabold">Safeguard Your Online Platform</h1>
+			<p class="text-lg">Moderate user-generated contents efficiently.</p>
+			<div class="flex gap-4">
+				<Button on:click={() => goto('/dashboard')}>Get Started</Button>
+				<Button variant="outline" on:click={() => goto('/about')}>Learn More</Button>
+			</div>
+		</section>
+		<section class="my-8 flex flex-col items-center justify-center gap-8">
+			<h2 class="text-3xl font-bold">Features</h2>
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Open-Source</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>
+							Wallo is open-source, allowing for transparency and community contributions.
+						</Card.Description>
+					</Card.Content>
+				</Card.Root>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Easy Integration</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>
+							Our simple API makes it easy to integrate Wallo with your platform.
+						</Card.Description>
+					</Card.Content>
+				</Card.Root>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Privacy Focused</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>
+							We only store the absolute necessary data to ensure user privacy.
+						</Card.Description>
+					</Card.Content>
+				</Card.Root>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Real-time Moderation</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>
+							Subscribe to real-time updates for immediate moderation actions.
+						</Card.Description>
+					</Card.Content>
+				</Card.Root>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Customizable</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>
+							Customize moderation settings and rules to fit your platform's needs.
+						</Card.Description>
+					</Card.Content>
+				</Card.Root>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Community Support</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>Join our community for support and collaboration.</Card.Description>
+					</Card.Content>
+				</Card.Root>
+			</div>
+		</section>
+		<section class="my-8 flex w-full flex-col items-center justify-center">
+			<h2 class="mb-8 text-3xl font-bold">How It Works</h2>
+			<section class="flex w-full gap-4">
+				<div class="flex h-auto flex-col items-center justify-center">
+					<Card.Root>
+						<Card.Title class="p-2">1</Card.Title>
+					</Card.Root>
+					<!-- bar that extends to the bottom -->
+					<div class="w-1 flex-1 bg-[hsl(var(--border))]"></div>
+				</div>
+				<div class="mb-4 flex flex-1 flex-wrap items-start justify-between gap-4">
+					<div class="min-w-48 flex-1">
+						<h3 class="text-2xl font-semibold">User posts something on your platform</h3>
+
+						<p class="py-2">
+							This can be a social media post, a comment, a review, or any other user-generated
+							content.
+						</p>
+					</div>
+					<Card.Root class="flex-1">
+						<Card.Header>
+							<div class="flex items-center gap-3 text-lg font-medium">
+								<Avatar.Root>
+									<Avatar.Image
+										src="https://images.opencollective.com/yichen-gao/8ddd996/avatar/256.png?height=64"
+										alt="User Avatar"
+									/>
+									<Avatar.Fallback>PU</Avatar.Fallback>
+								</Avatar.Root>
+								<div class="flex flex-col gap-0.5">
+									<span class="text-sm font-semibold"> Yichen </span>
+									<span class="text-sm text-gray-500"> 2 hours ago </span>
+								</div>
+							</div>
+						</Card.Header>
+						<Card.Content>
+							<Card.Description class="font-mono">
+								{demoStatement}
+							</Card.Description>
+						</Card.Content>
+					</Card.Root>
+				</div>
+			</section>
+			<section class="flex w-full gap-4">
+				<div class="flex h-auto flex-col items-center justify-center">
+					<Card.Root>
+						<Card.Title class="p-2">2</Card.Title>
+					</Card.Root>
+					<!-- bar that extends to the bottom -->
+					<div class="w-1 flex-1 bg-[hsl(var(--border))]"></div>
+				</div>
+				<div class="mb-4 flex flex-1 flex-wrap justify-between gap-4 overflow-hidden">
+					<div class="min-w-48 flex-1">
+						<h3 class="text-2xl font-semibold">Your platform sends an API request to Wallo</h3>
+						<p class="py-2">
+							This can be done if someone reports the content or if you have automated moderation in
+							place.
+						</p>
+					</div>
+					<Card.Root class="w-full flex-1">
+						<Highlight
+							language={typescript}
+							code={String.raw`
+fetch('https://wallo.dev/api/v1/publish', {
+	method: 'POST',
+	headers: {
+		'Content-Type': 'application/json',
+		'Authorization': 'Bearer ' + YOUR_ACCESS_TOKEN,
+	},
+	body: JSON.stringify({
+		subjectId: postId,
+		subjectKind: 'content',
+		platformId: env.PLATFORM_ID,
+	})
+});`.trimStart()}
+						/>
+					</Card.Root>
+				</div>
+			</section>
+			<section class="flex w-full gap-4">
+				<div class="flex h-auto flex-col items-center justify-center">
+					<Card.Root>
+						<Card.Title class="p-2">3</Card.Title>
+					</Card.Root>
+					<!-- bar that extends to the bottom -->
+					<div class="w-1 flex-1 bg-[hsl(var(--border))]"></div>
+				</div>
+				<div class="mb-4 flex flex-1 flex-wrap justify-between gap-4 overflow-hidden">
+					<div class="min-w-48 flex-1">
+						<h3 class="text-2xl font-semibold">Wallo retrieves the content from your platform</h3>
+						<p class="py-2">
+							This is only done when a moderator needs to take action on the content. In the future,
+							this can be configured to be done automatically to make moderation faster.
+						</p>
+					</div>
+					<Card.Root class="w-full flex-1">
+						<Highlight
+							language={typescript}
+							code={String.raw`
+fetch(YOUR_PLATFORM, {
+	method: 'POST',
+	headers: {
+		'Content-Type': 'application/json',
+		'Authorization': 'Bearer ' + YOUR_ACCESS_TOKEN,
+	},
+	body: JSON.stringify({
+		subjectId: postId,
+		subjectKind: 'content',
+	}),
+});
+`.trimStart()}
+						/>
+					</Card.Root>
+				</div>
+			</section>
+			<section class="flex w-full gap-4">
+				<div class="flex h-auto flex-col items-center justify-center">
+					<Card.Root>
+						<Card.Title class="p-2">4</Card.Title>
+					</Card.Root>
+					<!-- bar that extends to the bottom -->
+					<div class="w-1 flex-1 bg-[hsl(var(--border))]"></div>
+				</div>
+				<div class="mb-4 flex flex-1 flex-wrap justify-between gap-4 overflow-hidden">
+					<div class="min-w-48 flex-1">
+						<h3 class="text-2xl font-semibold">
+							Your platform responds with the relevant information.
+						</h3>
+						<p class="py-2">
+							This can include the content itself, the user who posted it, and the possible actions
+							that can be taken.
+						</p>
+					</div>
+					<Card.Root class="w-full flex-1">
+						<Highlight
+							language={json}
+							code={String.raw`{
+	"medias": [{
+		kind: "text",
+		message: "` +
+								demoStatement +
+								String.raw`"
+	}],
+	"possibleActions": [{
+		id: "approve",
+		display: "Approve",
+	}, {
+		id: "reject",
+		display: "Reject",
+		variant: "destructive",
+	}],
+}`.trim()}
+						/>
+					</Card.Root>
+				</div>
+			</section>
+			<section class="flex w-full gap-4">
+				<div class="flex h-auto flex-col items-center">
+					<Card.Root>
+						<Card.Title class="p-2">5</Card.Title>
+					</Card.Root>
+				</div>
+				<div class="mb-4 flex flex-1 flex-wrap justify-between gap-4 overflow-hidden">
+					<div class="min-w-48 flex-1">
+						<h3 class="text-2xl font-semibold">The moderator takes action</h3>
+						<p class="py-2">
+							The moderator can approve or reject the content based on the platform's guidelines.
+							Then Wallo will notify your platform of the action taken.
+						</p>
+					</div>
+					<div class="flex w-full min-w-60 flex-1 flex-col gap-4">
+						{#if actionTaken !== null}
+							<Card.Root class="flex flex-col gap-4 p-4">
+								<Card.Root>
+									<Highlight
+										language={typescript}
+										code={String.raw`fetch(YOUR_PLATFORM, {
+	method: 'POST',
+	headers: {
+		'Content-Type': 'application/json',
+		'Authorization': 'Bearer ' + YOUR_ACCESS_TOKEN,
+	},
+	body: JSON.stringify({
+		subjectId: postId,
+		subjectKind: 'content',
+		action: '` +
+											actionTaken +
+											String.raw`'
+	}),
+});`.trimStart()}
+									/>
+								</Card.Root>
+								<div class="flex w-full gap-4">
+									{#if actionTaken === 'approve' || actionTaken === 'unreject'}
+										<Button
+											class="flex-1"
+											variant="destructive"
+											on:click={() => {
+												actionTaken = 'unapprove';
+											}}
+										>
+											Unapprove
+										</Button>
+									{:else}
+										<Button
+											class="flex-1"
+											variant="destructive"
+											on:click={() => {
+												actionTaken = 'unreject';
+											}}
+										>
+											Unreject
+										</Button>
+									{/if}
+								</div>
+							</Card.Root>
+						{:else}
+							<Card.Root class="flex flex-col gap-4 p-4 font-mono">
+								<MediaDisplay
+									medias={[
+										{
+											kind: 'text',
+											message: 'Yichen',
+											tag: 'User Name'
+										},
+										{
+											kind: 'image',
+											url: 'https://images.opencollective.com/yichen-gao/8ddd996/avatar/256.png?height=128',
+											alt: 'User Avatar',
+											tag: 'User Avatar'
+										},
+										{
+											kind: 'text',
+											message: '2 hours ago',
+											tag: 'Date'
+										},
+										{
+											kind: 'text',
+											message: demoStatement,
+											tag: 'Content'
+										}
+									]}
+								></MediaDisplay>
+								<div class="flex w-full gap-4">
+									<Button
+										class="flex-1"
+										on:click={() => {
+											actionTaken = 'approve';
+										}}>Approve</Button
+									>
+									<Button
+										class="flex-1"
+										variant="destructive"
+										on:click={() => {
+											actionTaken = 'reject';
+										}}>Reject</Button
+									>
+								</div>
+							</Card.Root>
+						{/if}
+					</div>
+				</div>
+			</section>
+		</section>
+	</main>
 </div>

@@ -78,32 +78,33 @@ bun wrangler deploy
 There's only one incoming API at the moment:
 
 ```http
-POST /api/v0/requestPublication
+POST /api/v1/publish
 Content-Type: application/json
-Authorization: Basic {SECRET}
+Authorization: Bearer {SECRET}
 {
-    id: string;
-    clientId: string;
-    kind: 'content';
+    subjectId: string;
+    subjectKind: 'content';
+    platformId: string;
 }
 ```
 
-Where `id` is the content id, and `clientId` being the id relating to the platform.
+Where `subjectId` is the content id, and `platformId` being the id relating to your platform.
 
 Wallo also makes a callback request either of two types:
 
-```http
-POST {CALLBACK URL}
-Content-Type: application/json
-Authorization: Basic {SECRET}
-{
-    kind: 'content';
-    relevantId: string;
-}
+### Subject Retrieval
 
+```http
+POST {CALLBACK URL}/v1
+Content-Type: application/json
+Authorization: Bearer {SECRET}
+{
+    subjectId: string;
+    subjectKind: 'content';
+}
 ```
 
-Of which the callback URL should respond with the content that the `relevantId` is associated with.
+Of which the callback URL should respond with the content that the `subjectId` is associated with. **The callback URL must include the version ID. In the form of `v1`.**
 
 It should respond with the following format:
 
@@ -138,16 +139,15 @@ type Media =
 	  };
 ```
 
-The second call is made when an action has been done:
+### Action Notification
 
 ```http
 POST {CALLBACK URL}
 Content-Type: application/json
-Authorization: Basic {SECRET}
+Authorization: Bearer {SECRET}
 {
-    kind: 'content';
-    relevantId: string;
+    subjectId: string;
+    subjectKind: 'content';
     action: string;
 }
-
 ```

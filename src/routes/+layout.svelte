@@ -6,4 +6,8 @@
 <ModeWatcher />
 <slot></slot>
 
-<style></style>
+<style>
+	:global(pre code.hljs) {
+		background: transparent;
+	}
+</style>
