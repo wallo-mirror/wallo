@@ -15,6 +15,7 @@
 	import { onMount } from 'svelte';
 	import { json } from 'svelte-highlight/languages';
 	import MediaDisplay from './dashboard/platform/[platformId]/case/[kindId]/[caseId]/MediaDisplay.svelte';
+	import Separator from '$lib/components/ui/separator/separator.svelte';
 
 	export let data: PageData;
 
@@ -67,7 +68,7 @@
 </svelte:head>
 
 <div>
-	<header class="container flex max-w-screen-xl gap-2 py-2">
+	<header class="container flex max-w-screen-xl gap-2 py-4">
 		<nav class=" contents">
 			<a class="flex items-center gap-1 text-3xl font-extrabold" href="/">
 				<Logo></Logo>
@@ -88,13 +89,13 @@
 		</nav>
 		<ThemeSwitch></ThemeSwitch>
 	</header>
-	<main class="container flex flex-col items-center justify-center gap-4 py-16">
+	<main class="container flex flex-col items-center justify-center gap-4 pb-4 pt-16">
 		<section class="flex flex-col items-center justify-center gap-4">
 			<h1 class="text-5xl font-extrabold">Safeguard Your Online Platform</h1>
 			<p class="text-lg">Moderate user-generated contents efficiently.</p>
 			<div class="flex gap-4">
 				<Button on:click={() => goto('/dashboard')}>Get Started</Button>
-				<Button variant="outline" on:click={() => goto('/about')}>Learn More</Button>
+				<Button variant="outline" href="https://gitlab.com/wallo-dev/wallo">Source Code</Button>
 			</div>
 		</section>
 		<section class="my-8 flex flex-col items-center justify-center gap-8">
@@ -424,5 +425,69 @@ fetch(YOUR_PLATFORM, {
 				</div>
 			</section>
 		</section>
+		<section class="my-8 flex w-full flex-col items-center justify-center gap-4">
+			<h2 class="mb-8 text-3xl font-bold">Pricing</h2>
+			<div class="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Free</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>
+							<ul class="list-inside list-disc">
+								<li>Up to 10000 requests per month</li>
+								<li>Basic moderation features</li>
+								<li>Community support</li>
+							</ul>
+						</Card.Description>
+					</Card.Content>
+					<Card.Footer>
+						<Button variant="outline" on:click={() => goto('/dashboard')}>Get Started</Button>
+					</Card.Footer>
+				</Card.Root>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Enterprise</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>
+							<ul class="list-inside list-disc">
+								<li>Custom requests</li>
+								<li>Custom moderation features</li>
+								<li>24/7 support</li>
+							</ul>
+						</Card.Description>
+					</Card.Content>
+					<Card.Footer>
+						<Button variant="outline" href="mailto:sales@wallo.dev">Contact Sales</Button>
+					</Card.Footer>
+				</Card.Root>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Self-hosted</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>
+							<ul class="list-inside list-disc">
+								<li>Unlimited requests</li>
+								<li>Full control over data</li>
+								<li>Customizable moderation rules</li>
+							</ul>
+						</Card.Description>
+					</Card.Content>
+					<Card.Footer>
+						<Button variant="outline" href="https://gitlab.com/wallo-dev/wallo">
+							Get Source Code
+						</Button>
+					</Card.Footer>
+				</Card.Root>
+			</div>
+		</section>
+		<Separator></Separator>
+		<footer class="container flex items-center justify-center gap-4 py-4">
+			<p class="text-center text-sm">
+				© {new Date().getFullYear()} Wallo. All rights reserved.
+			</p>
+		</footer>
 	</main>
 </div>
