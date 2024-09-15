@@ -2,6 +2,9 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import { page } from '$app/stores';
 	import '../app.css';
+	import '@fontsource/geist-sans/400.css';
+	import '@fontsource/geist-sans/500.css';
+	import '@fontsource/geist-sans/700.css';
 </script>
 
 <svelte:head>

@@ -15,7 +15,7 @@
 	import { onMount } from 'svelte';
 	import { json } from 'svelte-highlight/languages';
 	import MediaDisplay from './dashboard/platform/[platformId]/case/[kindId]/[caseId]/MediaDisplay.svelte';
-	import Separator from '$lib/components/ui/separator/separator.svelte';
+	import { GitlabIcon } from 'lucide-svelte';
 
 	export let data: PageData;
 
@@ -67,18 +67,28 @@
 	{/if}
 </svelte:head>
 
-<div>
-	<header class="container flex max-w-screen-xl gap-2 py-4">
-		<nav class=" contents">
-			<a class="flex items-center gap-1 text-3xl font-extrabold" href="/">
+<div class="relative">
+	<header
+		class="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+	>
+		<nav class="container flex max-w-screen-2xl items-center gap-2 py-2">
+			<a class="flex items-center gap-1 text-2xl font-extrabold" href="/">
 				<Logo></Logo>
 				Wallo
 			</a>
-			<div class=" ms-auto">
+			<div class="ms-auto flex">
+				<Button variant="ghost" size="icon">
+					<GitlabIcon class="h-[1.2rem] w-[1.2rem]" />
+				</Button>
+				<ThemeSwitch></ThemeSwitch>
+			</div>
+			<div>
 				{#if data.session}
-					<Button on:click={() => goto('/dashboard')}>Dashboard</Button>
+					<Button size="sm" variant="outline" on:click={() => goto('/dashboard')}>Dashboard</Button>
 				{:else}
 					<Button
+						size="sm"
+						variant="outline"
 						on:click={() =>
 							signIn('github', {
 								callbackUrl: '/dashboard'
@@ -87,13 +97,23 @@
 				{/if}
 			</div>
 		</nav>
-		<ThemeSwitch></ThemeSwitch>
 	</header>
-	<main class="container flex flex-col items-center justify-center gap-4 pb-4 pt-16">
-		<section class="flex flex-col items-center justify-center gap-4">
-			<h1 class="text-5xl font-extrabold">Safeguard Your Online Platform</h1>
-			<p class="text-lg">Moderate user-generated contents efficiently.</p>
-			<div class="flex gap-4">
+	<main class="container flex flex-col items-center justify-center gap-4">
+		<section
+			class="flex flex-col items-center justify-center gap-2 py-8 pb-8 md:py-12 md:pb-8 lg:py-24 lg:pb-20"
+		>
+			<p class="rounded bg-muted px-3 py-1 text-center text-sm font-medium">
+				Wallo is under active development
+			</p>
+			<h1
+				class="text-center text-3xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1]"
+			>
+				Safeguard your online platform
+			</h1>
+			<p class="text-balance text-center text-lg text-muted-foreground sm:text-xl">
+				Moderate user-generated contents efficiently.
+			</p>
+			<div class="flex gap-4 py-4 md:pb-10">
 				<Button on:click={() => goto('/dashboard')}>Get Started</Button>
 				<Button variant="outline" href="https://gitlab.com/wallo-dev/wallo">Source Code</Button>
 			</div>
@@ -483,11 +503,10 @@ fetch(YOUR_PLATFORM, {
 				</Card.Root>
 			</div>
 		</section>
-		<Separator></Separator>
-		<footer class="container flex items-center justify-center gap-4 py-4">
-			<p class="text-center text-sm">
-				© {new Date().getFullYear()} Wallo. All rights reserved.
-			</p>
-		</footer>
 	</main>
+	<footer class="border-t py-6">
+		<p class="container text-center text-sm">
+			© {new Date().getFullYear()} Wallo. All rights reserved.
+		</p>
+	</footer>
 </div>
