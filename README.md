@@ -36,7 +36,7 @@ For the two other values, follow [this tutorial at Auth.js](https://authjs.dev/g
 Create a D1 database in Cloudflare and copy its id and name into `wrangler.toml`. Then run:
 
 ```bash
-bun wrangler d1 execute pluto --local --file src/schema.sql
+bun wrangler d1 execute YOUR_DB_NAME --local --file src/schema.sql
 ```
 
 After setting up that you can start a server with:
