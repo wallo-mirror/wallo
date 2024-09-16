@@ -118,8 +118,8 @@
 				<Button variant="outline" href="https://gitlab.com/wallo-dev/wallo">Source Code</Button>
 			</div>
 		</section>
-		<section class="my-8 flex flex-col items-center justify-center gap-8">
-			<h2 class="text-3xl font-bold">Features</h2>
+		<section class="my-8 flex flex-col items-center justify-center">
+			<h2 class="mb-8 text-3xl font-bold">Features</h2>
 			<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 				<Card.Root>
 					<Card.Header>
@@ -445,7 +445,7 @@ fetch(YOUR_PLATFORM, {
 				</div>
 			</section>
 		</section>
-		<section class="my-8 flex w-full flex-col items-center justify-center gap-4">
+		<section class="my-8 flex w-full flex-col items-center justify-center">
 			<h2 class="mb-8 text-3xl font-bold">Pricing</h2>
 			<div class="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 				<Card.Root>
