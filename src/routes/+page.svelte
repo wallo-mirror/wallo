@@ -102,7 +102,7 @@
 		<section
 			class="flex flex-col items-center justify-center gap-2 py-8 pb-8 md:py-12 md:pb-8 lg:py-24 lg:pb-20"
 		>
-			<p class="rounded bg-muted px-3 py-1 text-center text-sm font-medium">
+			<p class="rounded-lg bg-muted px-3 py-1 text-center text-sm font-medium">
 				Wallo is under active development
 			</p>
 			<h1
