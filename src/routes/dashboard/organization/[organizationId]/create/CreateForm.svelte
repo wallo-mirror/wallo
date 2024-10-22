@@ -5,7 +5,11 @@
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
-	export let data: SuperValidated<Infer<FormSchema>>;
+	interface Props {
+		data: SuperValidated<Infer<FormSchema>>;
+	}
+
+	let { data }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema)
@@ -19,17 +23,21 @@
 </h1>
 <form class="flex max-w-screen-md flex-col gap-2" method="POST" use:enhance>
 	<Form.Field {form} name="platformName">
-		<Form.Control let:attrs>
-			<Form.Label>Platform Name</Form.Label>
-			<Input {...attrs} bind:value={$formData.platformName} />
+		<Form.Control>
+			{#snippet children({ attrs })}
+				<Form.Label>Platform Name</Form.Label>
+				<Input {...attrs} bind:value={$formData.platformName} />
+			{/snippet}
 		</Form.Control>
 		<!-- <Form.Description>This is your organization display name.</Form.Description> -->
 		<Form.FieldErrors />
 	</Form.Field>
 	<Form.Field {form} name="callbackUrl">
-		<Form.Control let:attrs>
-			<Form.Label>Callback URL</Form.Label>
-			<Input {...attrs} bind:value={$formData.callbackUrl} />
+		<Form.Control>
+			{#snippet children({ attrs })}
+				<Form.Label>Callback URL</Form.Label>
+				<Input {...attrs} bind:value={$formData.callbackUrl} />
+			{/snippet}
 		</Form.Control>
 		<!-- <Form.Description>This is your organization display name.</Form.Description> -->
 		<Form.FieldErrors />

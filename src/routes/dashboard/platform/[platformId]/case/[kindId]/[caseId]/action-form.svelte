@@ -6,25 +6,32 @@
 	import type { PossibleAction } from '$lib/types';
 	import Input from '$lib/components/ui/input/input.svelte';
 
-	export let data: SuperValidated<Infer<ActionFormSchema>>;
-
 	const form = superForm(data, {
 		validators: zodClient(actionFormSchema)
 	});
 
-	export let action: PossibleAction;
+	interface Props {
+		data: SuperValidated<Infer<ActionFormSchema>>;
+		action: PossibleAction;
+	}
+
+	let { data, action }: Props = $props();
 </script>
 
 <form method="POST" action="?/action" class="flex-1">
 	<Form.Field {form} name="id" class="hidden">
-		<Form.Control let:attrs>
-			<Input {...attrs} value={action.id} />
+		<Form.Control>
+			{#snippet children({ attrs })}
+				<Input {...attrs} value={action.id} />
+			{/snippet}
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
 	<Form.Field {form} name="display" class="hidden">
-		<Form.Control let:attrs>
-			<Input {...attrs} value={action.display} />
+		<Form.Control>
+			{#snippet children({ attrs })}
+				<Input {...attrs} value={action.display} />
+			{/snippet}
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>

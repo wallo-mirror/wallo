@@ -5,7 +5,11 @@
 	import { commentFormSchema, type CommentFormSchema } from './comment-schema';
 	import { Textarea } from '$lib/components/ui/textarea';
 
-	export let data: SuperValidated<Infer<CommentFormSchema>>;
+	interface Props {
+		data: SuperValidated<Infer<CommentFormSchema>>;
+	}
+
+	let { data }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zodClient(commentFormSchema)
@@ -16,9 +20,11 @@
 
 <form method="POST" action="?/comment">
 	<Form.Field {form} name="comment">
-		<Form.Control let:attrs>
-			<Form.Label>Comment</Form.Label>
-			<Textarea {...attrs} bind:value={$formData.comment} />
+		<Form.Control>
+			{#snippet children({ attrs })}
+				<Form.Label>Comment</Form.Label>
+				<Textarea {...attrs} bind:value={$formData.comment} />
+			{/snippet}
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>

@@ -2,7 +2,11 @@
 	import type { PageData } from './$types';
 	import CreateForm from './CreateForm.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <CreateForm data={data.form}></CreateForm>

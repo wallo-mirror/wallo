@@ -6,9 +6,12 @@
 	import { Check, X } from 'lucide-svelte';
 	import { inviteFormSchema, type InviteFormSchema } from './invite-schema';
 
-	export let data: SuperValidated<Infer<InviteFormSchema>>;
+	interface Props {
+		data: SuperValidated<Infer<InviteFormSchema>>;
+		platformId: string;
+	}
 
-	export let platformId: string;
+	let { data, platformId = $bindable() }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zodClient(inviteFormSchema)
@@ -18,8 +21,10 @@
 <div>
 	<form class="flex gap-2" method="POST">
 		<Form.Field {form} name="platformId" class="hidden">
-			<Form.Control let:attrs>
-				<Input {...attrs} bind:value={platformId} />
+			<Form.Control>
+				{#snippet children({ attrs })}
+					<Input {...attrs} bind:value={platformId} />
+				{/snippet}
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>

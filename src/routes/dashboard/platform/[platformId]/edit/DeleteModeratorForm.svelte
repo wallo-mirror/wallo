@@ -6,9 +6,12 @@
 	import { X } from 'lucide-svelte';
 	import { deleteModeratorFormSchema, type DeleteModeratorFormSchema } from './delete-moderator';
 
-	export let data: SuperValidated<Infer<DeleteModeratorFormSchema>>;
+	interface Props {
+		data: SuperValidated<Infer<DeleteModeratorFormSchema>>;
+		id: string;
+	}
 
-	export let id: string;
+	let { data, id = $bindable() }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zodClient(deleteModeratorFormSchema)
@@ -18,8 +21,10 @@
 <div>
 	<form class="flex gap-2" method="POST">
 		<Form.Field {form} name="id" class="hidden">
-			<Form.Control let:attrs>
-				<Input {...attrs} bind:value={id} />
+			<Form.Control>
+				{#snippet children({ attrs })}
+					<Input {...attrs} bind:value={id} />
+				{/snippet}
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>

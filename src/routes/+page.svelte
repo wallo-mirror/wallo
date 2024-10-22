@@ -17,7 +17,11 @@
 	import MediaDisplay from './dashboard/platform/[platformId]/case/[kindId]/[caseId]/MediaDisplay.svelte';
 	import { GitlabIcon } from 'lucide-svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	function splitmix32(a: number) {
 		return function () {
@@ -39,7 +43,7 @@
 		).join('');
 	}
 
-	let randomSeed = 0;
+	let randomSeed = $state(0);
 
 	onMount(() => {
 		const interval = setInterval(() => {
@@ -49,12 +53,13 @@
 		return () => clearInterval(interval);
 	});
 
-	$: currentRandomBadWord = (x: number, length: number) =>
-		generateRandomBadWord(randomSeed + x, length);
+	let currentRandomBadWord = $derived((x: number, length: number) =>
+		generateRandomBadWord(randomSeed + x, length)
+	);
 
-	$: demoStatement = `What does the fox say? ${currentRandomBadWord(0, 4)}`;
+	let demoStatement = $derived(`What does the fox say? ${currentRandomBadWord(0, 4)}`);
 
-	let actionTaken: 'approve' | 'unapprove' | 'unreject' | 'reject' | null = null;
+	let actionTaken: 'approve' | 'unapprove' | 'unreject' | 'reject' | null = $state(null);
 </script>
 
 <svelte:head>

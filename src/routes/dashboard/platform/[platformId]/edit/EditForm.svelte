@@ -5,7 +5,11 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { editFormSchema, type EditFormSchema } from './edit-schema';
 
-	export let data: SuperValidated<Infer<EditFormSchema>>;
+	interface Props {
+		data: SuperValidated<Infer<EditFormSchema>>;
+	}
+
+	let { data }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zodClient(editFormSchema)
@@ -20,25 +24,31 @@
 	</h1>
 	<form class="flex max-w-screen-md flex-col gap-2" method="POST">
 		<Form.Field {form} name="platformName">
-			<Form.Control let:attrs>
-				<Form.Label>Platform Name</Form.Label>
-				<Input {...attrs} bind:value={$formData.platformName} />
+			<Form.Control>
+				{#snippet children({ attrs })}
+					<Form.Label>Platform Name</Form.Label>
+					<Input {...attrs} bind:value={$formData.platformName} />
+				{/snippet}
 			</Form.Control>
 			<!-- <Form.Description>This is your organization display name.</Form.Description> -->
 			<Form.FieldErrors />
 		</Form.Field>
 		<Form.Field {form} name="callbackUrl">
-			<Form.Control let:attrs>
-				<Form.Label>Callback URL</Form.Label>
-				<Input {...attrs} bind:value={$formData.callbackUrl} />
+			<Form.Control>
+				{#snippet children({ attrs })}
+					<Form.Label>Callback URL</Form.Label>
+					<Input {...attrs} bind:value={$formData.callbackUrl} />
+				{/snippet}
 			</Form.Control>
 			<!-- <Form.Description>This is your organization display name.</Form.Description> -->
 			<Form.FieldErrors />
 		</Form.Field>
 		<Form.Field {form} name="secret">
-			<Form.Control let:attrs>
-				<Form.Label>Secret</Form.Label>
-				<Input {...attrs} disabled bind:value={$formData.secret} />
+			<Form.Control>
+				{#snippet children({ attrs })}
+					<Form.Label>Secret</Form.Label>
+					<Input {...attrs} disabled bind:value={$formData.secret} />
+				{/snippet}
 			</Form.Control>
 			<!-- <Form.Description>This is your organization display name.</Form.Description> -->
 			<Form.FieldErrors />

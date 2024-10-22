@@ -3,7 +3,11 @@
 	import { Label } from '$lib/components/ui/label';
 	import type { Media } from '$lib/types';
 
-	export let medias: Media[] = [];
+	interface Props {
+		medias?: Media[];
+	}
+
+	let { medias = [] }: Props = $props();
 </script>
 
 {#each medias as media}

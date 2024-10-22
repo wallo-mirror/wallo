@@ -10,7 +10,11 @@
 	import ActionForm from './action-form.svelte';
 	import MediaDisplay from './MediaDisplay.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <h1 class="my-3 flex max-w-screen-md place-content-between text-2xl font-extrabold">

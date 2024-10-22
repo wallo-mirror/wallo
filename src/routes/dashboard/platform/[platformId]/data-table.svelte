@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import type { Case } from '$lib/types';
 	import { createTable, Render, Subscribe } from 'svelte-headless-table';
 	import { writable } from 'svelte/store';
@@ -12,17 +14,21 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { Label } from '$lib/components/ui/label';
 
-	export let data: Case[];
-	export let count: number;
+	interface Props {
+		data: Case[];
+		count: number;
+	}
+
+	let { data, count }: Props = $props();
 
 	const paginatedData = writable(data);
 	const countStore = writable(count);
 
-	$: {
+	$effect.pre(() => {
 		// need to be reactive because data can change
 		$paginatedData = data;
 		// pluginStates.page.pageCount .update(() => count);
-	}
+	});
 
 	const table = createTable(paginatedData, {
 		page: addPagination({
@@ -85,7 +91,7 @@
 		{ value: 'content', label: 'Content' }
 	];
 
-	let kindFilter = kinds[0];
+	let kindFilter = $state(kinds[0]);
 
 	const statuses = [
 		{ value: 'all', label: 'All' },
@@ -93,9 +99,9 @@
 		{ value: 'unresolved', label: 'Unresolved' }
 	];
 
-	let statusFilter = kinds[0];
+	let statusFilter = $state(kinds[0]);
 
-	$: {
+	run(() => {
 		if (browser) {
 			const q = new URLSearchParams();
 			// if ($sortKeys.length) {
@@ -108,7 +114,7 @@
 			// here I call again +page.server.ts with the new url
 			goto(`?${q}`, { noScroll: true });
 		}
-	}
+	});
 </script>
 
 <div class="my-2 flex items-end gap-2">
@@ -153,10 +159,12 @@
 				<Subscribe rowAttrs={headerRow.attrs()}>
 					<Table.Row>
 						{#each headerRow.cells as cell (cell.id)}
-							<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
-								<Table.Head {...attrs}>
-									<Render of={cell.render()} />
-								</Table.Head>
+							<Subscribe attrs={cell.attrs()} props={cell.props()}>
+								{#snippet children({ attrs })}
+									<Table.Head {...attrs}>
+										<Render of={cell.render()} />
+									</Table.Head>
+								{/snippet}
 							</Subscribe>
 						{/each}
 					</Table.Row>
@@ -165,24 +173,28 @@
 		</Table.Header>
 		<Table.Body {...$tableBodyAttrs}>
 			{#each $pageRows as row (row.id)}
-				<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-					<Table.Row
-						{...rowAttrs}
-						on:click={() => {
-							if (row.isData()) {
-								goto(`case/${row.original.kind}/${row.original.relevantId}`);
-							}
-						}}
-						class="cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-400/5"
-					>
-						{#each row.cells as cell (cell.id)}
-							<Subscribe attrs={cell.attrs()} let:attrs>
-								<Table.Cell {...attrs}>
-									<Render of={cell.render()} />
-								</Table.Cell>
-							</Subscribe>
-						{/each}
-					</Table.Row>
+				<Subscribe rowAttrs={row.attrs()}>
+					{#snippet children({ rowAttrs })}
+						<Table.Row
+							{...rowAttrs}
+							on:click={() => {
+								if (row.isData()) {
+									goto(`case/${row.original.kind}/${row.original.relevantId}`);
+								}
+							}}
+							class="cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-400/5"
+						>
+							{#each row.cells as cell (cell.id)}
+								<Subscribe attrs={cell.attrs()}>
+									{#snippet children({ attrs })}
+										<Table.Cell {...attrs}>
+											<Render of={cell.render()} />
+										</Table.Cell>
+									{/snippet}
+								</Subscribe>
+							{/each}
+						</Table.Row>
+					{/snippet}
 				</Subscribe>
 			{/each}
 		</Table.Body>

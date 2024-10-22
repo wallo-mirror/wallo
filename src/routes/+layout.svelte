@@ -1,10 +1,15 @@
-<script>
+<script lang="ts">
 	import { ModeWatcher } from 'mode-watcher';
 	import { page } from '$app/stores';
 	import '../app.css';
 	import '@fontsource/geist-sans/400.css';
 	import '@fontsource/geist-sans/500.css';
 	import '@fontsource/geist-sans/700.css';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <svelte:head>
@@ -22,7 +27,7 @@
 </svelte:head>
 
 <ModeWatcher />
-<slot></slot>
+{@render children?.()}
 
 <style>
 	:global(pre code.hljs) {

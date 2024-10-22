@@ -5,7 +5,11 @@
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
-	export let data: SuperValidated<Infer<FormSchema>>;
+	interface Props {
+		data: SuperValidated<Infer<FormSchema>>;
+	}
+
+	let { data }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema)
@@ -19,9 +23,11 @@
 </h1>
 <form class="flex max-w-screen-md flex-col gap-2" method="POST">
 	<Form.Field {form} name="organization_name">
-		<Form.Control let:attrs>
-			<Form.Label>Organization Name</Form.Label>
-			<Input {...attrs} bind:value={$formData.organization_name} />
+		<Form.Control>
+			{#snippet children({ attrs })}
+				<Form.Label>Organization Name</Form.Label>
+				<Input {...attrs} bind:value={$formData.organization_name} />
+			{/snippet}
 		</Form.Control>
 		<!-- <Form.Description>This is your organization display name.</Form.Description> -->
 		<Form.FieldErrors />

@@ -7,7 +7,12 @@
 	import Logo from '$lib/logo.svelte';
 	import { getInitials } from '$lib/name';
 
-	export let data: LayoutData;
+	interface Props {
+		data: LayoutData;
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
 </script>
 
 <div class="border-b-2">
@@ -42,5 +47,5 @@
 	</header>
 </div>
 <main class="container max-w-screen-xl py-2">
-	<slot></slot>
+	{@render children?.()}
 </main>

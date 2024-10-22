@@ -4,7 +4,11 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <h1 class="my-5 flex max-w-screen-sm place-content-between text-4xl font-extrabold">

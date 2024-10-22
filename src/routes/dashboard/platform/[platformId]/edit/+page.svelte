@@ -6,7 +6,11 @@
 	import InviteForm from './InviteForm.svelte';
 	import DeleteInvitationForm from './DeleteInvitationForm.svelte';
 	import DeleteModeratorForm from './DeleteModeratorForm.svelte';
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <div class="flex">

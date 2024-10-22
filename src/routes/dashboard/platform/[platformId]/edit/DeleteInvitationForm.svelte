@@ -6,9 +6,12 @@
 	import { inviteFormSchema, type InviteFormSchema } from './invite-moderator';
 	import { X } from 'lucide-svelte';
 
-	export let data: SuperValidated<Infer<InviteFormSchema>>;
+	interface Props {
+		data: SuperValidated<Infer<InviteFormSchema>>;
+		email: string;
+	}
 
-	export let email: string;
+	let { data, email = $bindable() }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zodClient(inviteFormSchema)
@@ -18,8 +21,10 @@
 <div>
 	<form class="flex gap-2" method="POST">
 		<Form.Field {form} name="email" class="hidden">
-			<Form.Control let:attrs>
-				<Input {...attrs} bind:value={email} />
+			<Form.Control>
+				{#snippet children({ attrs })}
+					<Input {...attrs} bind:value={email} />
+				{/snippet}
 			</Form.Control>
 			<Form.FieldErrors />
 		</Form.Field>
