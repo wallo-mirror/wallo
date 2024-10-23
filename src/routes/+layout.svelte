@@ -1,15 +1,46 @@
 <script lang="ts">
 	import { ModeWatcher } from 'mode-watcher';
-	import { page } from '$app/stores';
+	import { navigating, page } from '$app/stores';
 	import '../app.css';
 	import '@fontsource/geist-sans/400.css';
 	import '@fontsource/geist-sans/500.css';
 	import '@fontsource/geist-sans/700.css';
+	import { onMount } from 'svelte';
+	import { Loader2 } from 'lucide-svelte';
 	interface Props {
 		children?: import('svelte').Snippet;
 	}
 
 	let { children }: Props = $props();
+
+	let mounting = $state(true);
+
+	const startTimer = (f: () => void, ms: number) => {
+		let timer = setTimeout(f, ms);
+		return () => {
+			clearTimeout(timer);
+		};
+	};
+
+	let longNavigating = $state(false);
+	let stopTimer = () => {
+		// left empty for a reason
+	};
+
+	$effect(() => {
+		if ($navigating) {
+			stopTimer = startTimer(() => {
+				longNavigating = true;
+			}, 100);
+		} else {
+			stopTimer();
+			longNavigating = false;
+		}
+	});
+
+	onMount(() => {
+		mounting = false;
+	});
 </script>
 
 <svelte:head>
@@ -27,7 +58,15 @@
 </svelte:head>
 
 <ModeWatcher />
-{@render children?.()}
+{#if mounting || longNavigating}
+	<div class="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center">
+		<div class="flex items-center">
+			<Loader2 class="h-10 w-10 animate-spin text-primary/60"></Loader2>
+		</div>
+	</div>
+{:else}
+	{@render children?.()}
+{/if}
 
 <style>
 	:global(pre code.hljs) {
